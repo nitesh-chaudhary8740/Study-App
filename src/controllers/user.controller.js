@@ -33,5 +33,31 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req,res) =>{
+    console.log("is code reached here")
+    const {email_or_userName,password} = req.body;
+    //check for empty fields
+    if( !email_or_userName){
+        console.log("error in empty")
+        throw new ApiError(400,"please provide email or username")
+    }
+    //check password
+    if(!password){
+         throw new ApiError(400,"password is required")
+    }
+    //find user with email or password
+    const foundedUser = await User.findOne({$or:[{userName: email_or_userName},{email: email_or_userName}]})
+   
+    if(!foundedUser){
+         throw new ApiError(404,"no user exists with this username or email")
+    }
+    //if user found then password check
+   const isPasswordCorrect = await foundedUser.comparePassword(password)
+
+   if(!isPasswordCorrect){
+       console.log(password)
+    throw new ApiError(401,"username and password not match please recheck")
+   }
+   const loggedInUser = await User.findById(foundedUser._id).select("-password")
+   res.status(200).json(new API_Response(200,loggedInUser,"user logged in successfully"))
     
 }
