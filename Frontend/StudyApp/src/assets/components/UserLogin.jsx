@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // This component is designed to be completely unstyled, so you can add your own.
 // We're using inline styles here to override any global stylesheets from the preview environment.
 export default function UserLogin() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email_or_userName: '',
     password: '',
@@ -21,9 +23,12 @@ export default function UserLogin() {
     event.preventDefault();
     console.log('Login data submitted:', formData);
     try {
-      const response = await   axios.post("http://localhost:8081/user/login",formData);
-const data = await response.data
+      const response = await axios.post("http://localhost:8081/user/login",formData,{withCredentials:true});
+      const data = await response?.data
+    console.log(data)
     console.log('response data:', data);
+    navigate('/dashboard',{state:data})
+    
     } catch (error) {
       console.log("response error",error.response.data)
       console.log(error)
