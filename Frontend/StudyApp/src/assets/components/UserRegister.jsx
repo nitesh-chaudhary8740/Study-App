@@ -11,8 +11,8 @@ export default function UserRegister() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData(prevState => ({
-      ...prevState,
       [name]: value,
+      ...prevState,
     }));
   };
 

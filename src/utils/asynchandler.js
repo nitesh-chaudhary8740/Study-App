@@ -12,4 +12,5 @@ const asyncHandler = (func) => async (req,res,next) => {
             })
         }
 }
+
 export {asyncHandler}

@@ -8,7 +8,7 @@ const moduleSchema = new Schema({
         trim: true
     },
     moduleDuration: {
-        type: Number,
+        type: Number, //in minutes
         default: 0
     },
     moduleMedia: {
@@ -20,6 +20,12 @@ const moduleSchema = new Schema({
 }, { _id: true }); // _id:true is the default, but it's good practice to be explicit.
 
 const courseSchema = new Schema({
+    courseCode: {
+        type: String,
+        required: true,
+        unique:true,
+        trim: true
+    },
     courseName: {
         type: String,
         required: true,
@@ -30,9 +36,8 @@ const courseSchema = new Schema({
         required: true
     },
     courseProvider: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Provider"
     },
     courseModules: [moduleSchema] // Referencing the subdocument schema
 }, { timestamps: true });
