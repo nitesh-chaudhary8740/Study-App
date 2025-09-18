@@ -7,7 +7,7 @@ import express from "express"
 
 const app = express()
 import router from "./routes/user.routes.js"
-import { adminRouter, providerRouter } from "./routes/provider.routes.js"
+import {  providerRouter } from "./routes/provider.routes.js"
 console.log("this is cors",process.env.CORS_ORIGIN)
 app.use(cors({
     origin:process.env.CORS_ORIGIN,

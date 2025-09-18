@@ -4,6 +4,7 @@ import UserLogin from "./assets/components/UserLogin"
 
 import UserDashBoard from "./assets/components/UserDashBoard"
 import UploadCourse from "./assets/components/UploadCourse"
+import ProviderRegistration from "./assets/components/ProviderRegistration"
 
 function App() {
  
@@ -17,6 +18,7 @@ function App() {
           <Route path="/login" element={<UserLogin  />} />
           <Route path="/dashboard" element={<UserDashBoard/>} />
           <Route path="/upload-course" element={<UploadCourse/>} />
+          <Route path="/provider-registration" element={<ProviderRegistration/>} />
           
         </Routes>
       </>
