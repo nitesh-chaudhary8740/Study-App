@@ -34,10 +34,20 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
-      courses: [{
+      purchasedCourses: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'UserProgress' // References a new progress model
-    }]
+    }],
+    isPublisher:{
+      type:Boolean,
+      default:false,
+    },
+    publishedCourses:[
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Course"
+      }
+    ]
   
   },
   { timestamps: true }

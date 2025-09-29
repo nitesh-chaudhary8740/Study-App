@@ -35,9 +35,17 @@ const courseSchema = new Schema({
         type: Number,
         required: true
     },
-    courseProvider: {
+    courseCategory:{
+        type:String,
+        required:true,
+        trim:true
+    },
+    courseCoverImage:{
+        type:String
+    },
+    coursePublisher: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"Provider"
+        ref:"User"
     },
     courseModules: [moduleSchema] // Referencing the subdocument schema
 }, { timestamps: true });
