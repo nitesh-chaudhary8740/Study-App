@@ -1,16 +1,18 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Auth.css";
-
 
 export default function UserLogin() {
   const navigate = useNavigate();
- 
+
   const [formData, setFormData] = useState({
     email_or_userName: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -32,8 +34,6 @@ export default function UserLogin() {
       );
 
       const data = response?.data;
-      
-
       // redirect to dashboard with response data
       navigate("/dashboard", { state: data });
     } catch (error) {
@@ -47,7 +47,8 @@ export default function UserLogin() {
       <div className="auth-card">
         <h2 className="auth-title">User Login</h2>
         <form onSubmit={handleSubmit} className="auth-form">
-          <div>
+          {/* Email / Username */}
+          <div className="form-group">
             <label htmlFor="email_or_userName">Email or Username</label>
             <input
               type="text"
@@ -59,18 +60,29 @@ export default function UserLogin() {
             />
           </div>
 
-          <div>
+          {/* Password with toggle */}
+          <div className="form-group password-field">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="input-with-icon">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
+          {/* Submit */}
           <button type="submit" className="btn-primary">
             Log In
           </button>

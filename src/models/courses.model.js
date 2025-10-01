@@ -33,6 +33,7 @@ const courseSchema = new Schema({
     },
     coursePrice: {
         type: Number,
+         trim:true,
         required: true
     },
     courseCategory:{
@@ -41,11 +42,17 @@ const courseSchema = new Schema({
         trim:true
     },
     courseCoverImage:{
-        type:String
+        type:String,
+        trim:true
+    },
+    coursePublisherName:{
+        type:String,
+         trim:true
     },
     coursePublisher: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        ref:"User",
+         trim:true
     },
     courseModules: [moduleSchema] // Referencing the subdocument schema
 }, { timestamps: true });

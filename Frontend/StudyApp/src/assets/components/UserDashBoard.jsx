@@ -59,7 +59,7 @@ const UserDashBoard = () => {
         </div>
 
         <button
-          className="btn-logout"
+          className="btn-normal"
           onClick={async () => {
             const response = await axios.post(
               "http://localhost:8081/user/logout",

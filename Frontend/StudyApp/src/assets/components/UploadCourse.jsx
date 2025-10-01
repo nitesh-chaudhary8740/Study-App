@@ -1,58 +1,84 @@
-import axios from 'axios'
-import React from 'react'
-import { useState } from 'react'
+import React, { useState } from "react";
+import axios from "axios";
+import "./upload-course.css";
+import "./button.css";
 
-const UploadCourse = () => {
+const UploadCourse = ({ onCancel, onStartUpload, onFinishUpload }) => {
+  const [courseData, setCourseData] = useState({
+    courseName: "",
+    coursePrice: "",
+    courseCategory: "",
+  });
 
-    const [createdCourse,setCreatedCourse] = useState(null)
-    const[courseData,setCourseData] = useState({
-        courseName:"",
-        coursePrice:"",
-        courseProvider:""
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      onStartUpload();
+      await axios.post("http://localhost:8081/admin/upload-course", courseData, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      onFinishUpload();
+    }
+  };
 
-    })
-const handOnSubmit = async(event)=>{
-    event.preventDefault()
-    const response = await axios.post("http://localhost:8081/admin/upload-course",courseData)
-    console.log(response)
-    const data = response.data.data;
-    console.log(data)
-    setCreatedCourse(data)
-}
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setCourseData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const inputHandleChange = (event)=>{
-    const {name,value} = event.target
-    setCourseData(prev =>({
-        ...prev,
-        [name]:value,
-    }))
-  }
-  if(createdCourse){
-    return (
-        <div>
-            <h1>your course successFully created</h1>
-            <span><h2>Course Code: </h2>{createdCourse.courseCode}</span>
-            <span><h2>Course Name: </h2>{createdCourse.courseName}</span>
-            <span><h2>Course price: </h2>{createdCourse.coursePrice}</span>
-            <span><h2>Course provider: </h2>{createdCourse.courseProvider}</span>
-        </div>
-    )
-  }
   return (
-    <div>
-        <div>
-            <h1>courseName:{courseData.courseName}</h1>
-            <h1>coursePrice:{courseData.coursePrice}</h1>
-            <h1>courseProvider:{courseData.courseProvider}</h1>
-        </div>
-      <form onSubmit={handOnSubmit}>
-        <input type="text" placeholder='courseName' name='courseName' value={courseData.courseName} onChange={inputHandleChange} />
-        <input type="text" placeholder='coursePrice' name='coursePrice' value={courseData.coursePrice}  onChange={inputHandleChange}/>
-        <input type="text" placeholder='courseProvider' name='courseProvider' value={courseData.courseProvider} onChange={inputHandleChange}/>
-        <input type="submit" value="upload course" />
-      </form>
+    <div className="dashboard-container">
+      <div className="dashboard-card">
+        <h1 className="dashboard-title">Upload Course</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <input
+              type="text"
+              name="courseName"
+              placeholder="Course Name"
+              value={courseData.courseName}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="text"
+              name="coursePrice"
+              placeholder="Course Price"
+              value={courseData.coursePrice}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <select
+              name="courseCategory"
+              value={courseData.courseCategory}
+              onChange={handleChange}
+            >
+              <option value="">Select Category</option>
+              <option>IT & Software</option>
+              <option>Business</option>
+              <option>Marketing</option>
+              <option>Personal Development</option>
+              <option>Photo and Video Editing</option>
+              <option>AI Courses</option>
+            </select>
+          </div>
+          <div className="button-group">
+            <button type="submit" className="btn btn-primary">
+              Upload
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default UploadCourse
+export default UploadCourse;

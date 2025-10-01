@@ -31,7 +31,8 @@ export const publishCourse = async (req, res) => {
     courseCode: `${user.userName.substring(0, 3)}-${uniqueCourseCode}`,
     courseName: validators.noExtraSpaces(courseName).trim(),
     coursePrice: Number(validators.noExtraSpaces(coursePrice).trim()),
-    instructor: user._id,
+    coursePublisherName: user?.fullName,
+    coursePublisher: user._id,
     courseCategory: validators.noExtraSpaces(courseCategory).trim(),
   });
 

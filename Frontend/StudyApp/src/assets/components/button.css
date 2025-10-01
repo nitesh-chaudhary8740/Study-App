@@ -1,0 +1,38 @@
+:root {
+  --accent-orange: #f59e0b;
+  --hover-orange: #d97706;
+  --text-dark: #374151;
+  --gray-light: #e5e7eb;
+  --gray-hover: #d1d5db;
+}
+
+/* Base button */
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-top: 20px;
+}
+
+/* Primary button */
+.btn-primary {
+  background: var(--accent-orange);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--hover-orange);
+}
+
+/* Secondary button */
+.btn-secondary {
+  background: var(--gray-light);
+  color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-hover);
+}

@@ -1,12 +1,15 @@
 :root {
   --primary-blue: #1e3a8a;
+  --accent-orange: #f59e0b;
+  --hover-orange: #d97706;
   --text-dark: #374151;
   --bg-light: #ffffff;
   --border-gray: #e5e7eb;
   --background-gray: #f9fafb;
 }
 
-.dashboard-container {
+/* Main container */
+.publisher-dashboard-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,7 +17,8 @@
   background: var(--background-gray);
 }
 
-.dashboard-card {
+/* Card styling */
+.publisher-dashboard-card {
   background: var(--bg-light);
   padding: 32px;
   border-radius: 12px;
@@ -24,42 +28,44 @@
   text-align: center;
 }
 
-.dashboard-title {
+/* Titles */
+.publisher-dashboard-title {
   font-size: 26px;
   font-weight: bold;
   color: var(--primary-blue);
   margin-bottom: 10px;
 }
 
-.dashboard-subtitle {
+.publisher-dashboard-subtitle {
   font-size: 16px;
   color: var(--text-dark);
   margin-bottom: 20px;
 }
 
-.dashboard-info {
+/* Info list for publisher details */
+.publisher-dashboard-info {
   margin: 20px 0;
   text-align: left;
 }
 
-.info-item {
+.publisher-info-item {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
   border-bottom: 1px solid var(--border-gray);
 }
 
-.info-label {
+.publisher-info-label {
   font-weight: 600;
   color: var(--text-dark);
 }
 
-.info-value {
+.publisher-info-value {
   color: var(--primary-blue);
 }
 
 /* Loading state */
-.dashboard-loading {
+.publisher-dashboard-loading {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,16 +75,17 @@
   color: var(--primary-blue);
 }
 
-.loading-bar {
+.publisher-loading-bar {
   width: 100%;
   height: 6px;
   background: var(--border-gray);
   border-radius: 3px;
   overflow: hidden;
   position: relative;
+  margin-top: 15px;
 }
 
-.loading-bar::before {
+.publisher-loading-bar::before {
   content: "";
   position: absolute;
   top: 0;
@@ -86,10 +93,10 @@
   width: 50%;
   height: 100%;
   background: var(--accent-orange);
-  animation: loading 1s linear infinite;
+  animation: publisher-loading 1s linear infinite;
 }
 
-@keyframes loading {
+@keyframes publisher-loading {
   from {
     left: -50%;
   }

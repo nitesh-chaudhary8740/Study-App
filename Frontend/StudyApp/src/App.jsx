@@ -6,6 +6,7 @@ import UserDashBoard from "./assets/components/UserDashBoard"
 import UploadCourse from "./assets/components/UploadCourse"
 import Navbar from "./assets/components/Navbar"
 import StudyAppProvider from "./assets/components/StudyAppProvider"
+import PublisherDashboard from "./assets/components/PublisherDashboard"
 
 function App() {
  
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<UserRegister />} />
           <Route path="/login" element={<UserLogin  />} />
           <Route path="/dashboard" element={<UserDashBoard/>} />
+          <Route path="/publisher-dashboard" element={<PublisherDashboard/>} />
           <Route path="/upload-course" element={<UploadCourse/>} />
           
         </Routes>

@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Auth.css";
+import { useNavigate } from "react-router-dom";
 
 export default function UserRegister() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     userName: "",
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -20,17 +24,16 @@ export default function UserRegister() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Form data submitted:", formData);
     try {
       const response = await axios.post(
         "http://localhost:8081/user/register",
         formData
       );
-      const data = response.data;
-      console.log("data is", data);
+      console.log("data is", response.data);
+      navigate("/login")
+
     } catch (error) {
-      console.error(error);
-      console.log(error?.response?.data);
+      console.error(error?.response?.data || error);
     }
   };
 
@@ -39,7 +42,8 @@ export default function UserRegister() {
       <div className="auth-card">
         <h2 className="auth-title">Register User</h2>
         <form onSubmit={handleSubmit} className="auth-form">
-          <div>
+          {/* Full Name */}
+          <div className="form-group">
             <label htmlFor="fullName">Full Name</label>
             <input
               type="text"
@@ -51,7 +55,8 @@ export default function UserRegister() {
             />
           </div>
 
-          <div>
+          {/* User Name */}
+          <div className="form-group">
             <label htmlFor="userName">User Name</label>
             <input
               type="text"
@@ -63,7 +68,8 @@ export default function UserRegister() {
             />
           </div>
 
-          <div>
+          {/* Email */}
+          <div className="form-group">
             <label htmlFor="email">Email Address</label>
             <input
               type="email"
@@ -75,16 +81,26 @@ export default function UserRegister() {
             />
           </div>
 
-          <div>
+          {/* Password */}
+          <div className="form-group password-field">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="input-with-icon">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="btn-primary">

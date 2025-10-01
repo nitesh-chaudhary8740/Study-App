@@ -65,9 +65,9 @@ export const registerUser = async (req, res) => {
   }
   const registeredUser = await User.create({
     userName:validators.noExtraSpaces(userName).trim(),
-    fullName:validators.noExtraSpaces(fullName)/trim(),
+    fullName:validators.noExtraSpaces(fullName).trim(),
     email:validators.noExtraSpaces(email).trim(),
-    password:validators.trim(),
+    password:password.trim()
   });
   const user = await User.findById(registeredUser._id).select("-password");
   return res
