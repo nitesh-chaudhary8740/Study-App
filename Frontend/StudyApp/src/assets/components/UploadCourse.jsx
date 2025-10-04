@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./upload-course.css";
-import "./button.css";
+import "./css/upload-course.css";
+import "./css/button.css";
+
+const categories = [
+  "IT & Software",
+  "Business",
+  "Marketing",
+  "Personal Development",
+  "Photo and Video Editing",
+  "AI Courses",
+];
 
 const UploadCourse = ({ onCancel, onStartUpload, onFinishUpload }) => {
   const [courseData, setCourseData] = useState({
@@ -9,6 +18,8 @@ const UploadCourse = ({ onCancel, onStartUpload, onFinishUpload }) => {
     coursePrice: "",
     courseCategory: "",
   });
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,6 +38,11 @@ const UploadCourse = ({ onCancel, onStartUpload, onFinishUpload }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setCourseData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCategorySelect = (category) => {
+    setCourseData((prev) => ({ ...prev, courseCategory: category }));
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -52,21 +68,33 @@ const UploadCourse = ({ onCancel, onStartUpload, onFinishUpload }) => {
               onChange={handleChange}
             />
           </div>
-          <div className="form-group">
-            <select
-              name="courseCategory"
-              value={courseData.courseCategory}
-              onChange={handleChange}
+
+          {/* Custom Dropdown */}
+          <div className="form-group custom-dropdown">
+            <div
+              className="dropdown-selected"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <option value="">Select Category</option>
-              <option>IT & Software</option>
-              <option>Business</option>
-              <option>Marketing</option>
-              <option>Personal Development</option>
-              <option>Photo and Video Editing</option>
-              <option>AI Courses</option>
-            </select>
+              {courseData.courseCategory || "Select Category"}
+              <span className="arrow">{isDropdownOpen ? "▲" : "▼"}</span>
+            </div>
+            {isDropdownOpen && (
+              <ul className="dropdown-list">
+                {categories.map((cat, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleCategorySelect(cat)}
+                    className={`dropdown-item ${
+                      courseData.courseCategory === cat ? "active" : ""
+                    }`}
+                  >
+                    {cat}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
           <div className="button-group">
             <button type="submit" className="btn btn-primary">
               Upload

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "./Auth.css";
+import "./css/Auth.css";
 import { useNavigate } from "react-router-dom";
 
 export default function UserRegister() {

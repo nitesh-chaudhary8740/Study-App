@@ -56,3 +56,42 @@
 .button-group .btn {
   flex: 1; /* same width for both buttons */
 }
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-selected {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-list {
+  position: absolute;
+  list-style: none;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  /* margin-top: 5px; */
+  border-radius: 6px;
+  max-height: 200px;
+  /* overflow-y: auto; */
+  z-index: 10;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover,
+.dropdown-item.active {
+  background: #101418;
+  color: white;
+}

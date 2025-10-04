@@ -76,7 +76,8 @@ export const registerUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  try {
+  console.log('login request received')
+  
     console.log("is code reached here");
     const { email_or_userName, password } = req.body;
     //check for empty fields
@@ -102,8 +103,9 @@ export const loginUser = async (req, res) => {
     if (!isPasswordCorrect) {
       console.log(password);
       throw new ApiError(401, "username and password not match please recheck");
+      
     }
-
+console.log("after passwword check")
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       foundedUser._id
     );
@@ -126,14 +128,11 @@ export const loginUser = async (req, res) => {
       .json(
         new API_Response(
           200,
-          { user: loggedInUser, accessToken, refreshToken },
+          loggedInUser,
           "logged in successfully"
         )
       );
-  } catch (error) {
-    console.log("login error", error);
-    throw new ApiError(500, "error in login user");
-  }
+
 };
 
 /**

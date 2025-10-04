@@ -6,7 +6,6 @@ const asyncHandler = (func) => async (req,res,next) => {
             console.log(error)
             res.status(error.statusCode || 500).json({
                 success:false,
-                // message:error.message || "An unexpected error occurred" //this might reveal senstive information
                 message: error.msg|| "An unexpected error occurred",
                 errors:error.errors
             })

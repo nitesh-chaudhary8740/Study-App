@@ -1,39 +1,13 @@
-import React, {  useEffect, useCallback, useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
 import axios from "axios";
-import "./Dashboard.css";
+import "./css/Dashboard.css";
 import { StudyContext } from "./StudyContext";
 
 const UserDashBoard = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-   const values = useContext(StudyContext);
-  // const [values.currentUser, values.setCurrentUser] = useState(null);
 
-  const fetchCurrentUserInSession = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8081/user/current-user",
-        { withCredentials: true }
-      );
-      const data = await response.data;
-      console.log(data);
-      values.setCurrentUser(data.data);
-    } catch (error) {
-      console.log("error", error);
-      navigate("/login");
-    }
-  }, [navigate,values]);
-
-  useEffect(() => {
-    if (location.state && location.state.data && location.state.data.user) {
-      values.setCurrentUser(location.state.data.user);
-    } else {
-      fetchCurrentUserInSession();
-    }
-  }, [location, fetchCurrentUserInSession,values]);
-
-  if (!values.currentUser) {
+  const values = useContext(StudyContext);
+ 
+  if (values.isLoading) {
     return (
       <div className="dashboard-loading">
         <p>Loading user data...</p>
@@ -68,7 +42,7 @@ const UserDashBoard = () => {
             );
             const data = await response.data;
             console.log("user logout", data);
-            navigate("/");
+       
           }}
         >
           Logout

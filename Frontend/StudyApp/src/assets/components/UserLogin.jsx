@@ -1,11 +1,15 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import "./Auth.css";
+import "./css/Auth.css";
+
+import { StudyContext } from "./StudyContext";
 
 export default function UserLogin() {
+  
   const navigate = useNavigate();
+  const values = useContext(StudyContext)
 
   const [formData, setFormData] = useState({
     email_or_userName: "",
@@ -34,8 +38,10 @@ export default function UserLogin() {
       );
 
       const data = response?.data;
-      // redirect to dashboard with response data
-      navigate("/dashboard", { state: data });
+      console.log("my data",data)
+      values.setCurrentUser(data.data)
+      values.setIsLoading(false)
+      navigate("/dashboard");
     } catch (error) {
       console.log("response error", error?.response?.data);
       console.error(error);

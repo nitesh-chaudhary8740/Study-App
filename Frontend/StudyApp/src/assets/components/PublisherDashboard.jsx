@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useContext, useState } from "react";
 import { StudyContext } from "./StudyContext.js";
-import { useNavigate } from "react-router-dom";
-import "./PublisherDashboard.css";
+
+import "./css/PublisherDashboard.css";
 import axios from "axios";
 import UploadCourse from "./UploadCourse";
 
 function PublisherDashboard() {
   const values = useContext(StudyContext);
-  const navigate = useNavigate();
+
   const [mode, setMode] = useState("dashboard"); // "dashboard" | "upload" | "loading"
 
   const registerAsPublisher = async () => {
@@ -23,14 +23,10 @@ function PublisherDashboard() {
       console.log(error);
     }
   };
+  
 
-  useEffect(() => {
-    if (!values.currentUser) {
-      navigate("/login");
-    }
-  }, [values.currentUser, navigate]);
 
-  if (!values.currentUser.isPublisher) {
+  if (!(values?.currentUser?.isPublisher)) {
     return (
       <div className="dashboard-container">
         <div className="dashboard-card">
