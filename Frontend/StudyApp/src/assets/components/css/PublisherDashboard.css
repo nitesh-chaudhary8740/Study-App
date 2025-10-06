@@ -8,32 +8,33 @@
   --background-gray: #f9fafb;
 }
 
-/* Main container */
+/* ----------- Layout ----------- */
 .publisher-dashboard-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 85vh;
+  align-items: flex-start; /* content starts from top */
+  padding: 40px 20px;
   background: var(--background-gray);
+  min-height: calc(100vh - 60px); /* full height minus navbar */
 }
 
-/* Card styling */
+/* Main content card */
 .publisher-dashboard-card {
   background: var(--bg-light);
   padding: 32px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 500px;
-  text-align: center;
+  max-width: 900px;
+  text-align: left;
 }
 
-/* Titles */
+/* ----------- Headings ----------- */
 .publisher-dashboard-title {
   font-size: 26px;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--primary-blue);
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .publisher-dashboard-subtitle {
@@ -42,7 +43,7 @@
   margin-bottom: 20px;
 }
 
-/* Info list for publisher details */
+/* ----------- Publisher Info ----------- */
 .publisher-dashboard-info {
   margin: 20px 0;
   text-align: left;
@@ -64,17 +65,23 @@
   color: var(--primary-blue);
 }
 
-/* Loading state */
-.publisher-dashboard-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 85vh;
-  font-size: 18px;
+/* ----------- Buttons ----------- */
+.btn-primary {
+  background: var(--accent-orange);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-weight: 500;
-  color: var(--primary-blue);
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
+.btn-primary:hover {
+  background: var(--hover-orange);
+}
+
+/* ----------- Loading State ----------- */
 .publisher-loading-bar {
   width: 100%;
   height: 6px;
@@ -103,4 +110,117 @@
   to {
     left: 100%;
   }
+}
+
+/* --- Published Courses Section --- */
+.published-courses-section {
+  margin-top: 30px;
+}
+
+.published-courses-section h3 {
+  color: var(--primary-blue);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* --- Grid Layout --- */
+.published-course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* --- Individual Course Card --- */
+.course-card {
+  background: var(--bg-light);
+  border: 1px solid var(--border-gray);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Image --- */
+.course-card-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+/* --- Content --- */
+.course-card-content {
+  padding: 14px 16px;
+}
+
+.course-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-bottom: 6px;
+}
+
+.course-card-desc {
+  font-size: 14px;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+/* --- Meta Info --- */
+.course-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #555;
+}
+
+.course-card-meta .price {
+  font-weight: 600;
+  color: var(--accent-orange);
+}
+
+.course-card-meta .students {
+  color: var(--text-dark);
+}
+/* --- Action Buttons for Course Cards --- */
+.course-card-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.btn-manage,
+.btn-delete {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-manage {
+  background: var(--primary-blue);
+  color: #fff;
+}
+
+.btn-manage:hover {
+  background: #162e6e;
+}
+
+.btn-delete {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background: #b91c1c;
 }

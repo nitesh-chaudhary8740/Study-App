@@ -1,15 +1,38 @@
-import React, {  useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StudyContext } from "./StudyContext.js";
-
 import "./css/PublisherDashboard.css";
 import axios from "axios";
 import UploadCourse from "./UploadCourse";
+import { Navigate } from "react-router-dom";
+import PublishedCoursesList from "./PublishCoursesList.jsx";
+// import PublishedCoursesList from "./PublishedCoursesList";
 
 function PublisherDashboard() {
   const values = useContext(StudyContext);
-
+  const [publishedCourses, setPublishedCourses] = useState([]);
   const [mode, setMode] = useState("dashboard"); // "dashboard" | "upload" | "loading"
 
+  // ✅ Fetch publisher's courses
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8081/user/fetch-courses",
+          { withCredentials: true }
+        );
+        console.log(response.data.data);
+        setPublishedCourses(response.data.data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    if (values?.currentUser?.isPublisher) {
+      fetchCourses();
+    }
+  }, [values.currentUser]);
+
+  // ✅ Register as publisher
   const registerAsPublisher = async () => {
     try {
       const response = await axios.post(
@@ -23,35 +46,44 @@ function PublisherDashboard() {
       console.log(error);
     }
   };
-  
 
+  // ✅ Redirect if not logged in
+  if (!values?.currentUser) {
+    return <Navigate to="/" replace />;
+  }
 
-  if (!(values?.currentUser?.isPublisher)) {
+  // ✅ If not publisher, show registration option
+  if (!values?.currentUser?.isPublisher) {
     return (
-      <div className="dashboard-container">
-        <div className="dashboard-card">
-          <h1 className="dashboard-title">Become a course publisher!</h1>
-          <button className="btn-logout" onClick={registerAsPublisher}>
-            Register
+      <div className="publisher-dashboard-container">
+        <div className="publisher-dashboard-card">
+          <h1 className="publisher-dashboard-title">
+            Become a course publisher!
+          </h1>
+          <p className="publisher-dashboard-subtitle">
+            Start creating and managing your own courses today.
+          </p>
+          <button className="btn-primary" onClick={registerAsPublisher}>
+            Register as Publisher
           </button>
         </div>
       </div>
     );
   }
 
-  // Mode: Loading
+  // ✅ Loading mode
   if (mode === "loading") {
     return (
-      <div className="dashboard-container">
-        <div className="dashboard-card">
-          <h2 className="dashboard-title">Uploading...</h2>
-          <div className="loading-bar"></div>
+      <div className="publisher-dashboard-container">
+        <div className="publisher-dashboard-card">
+          <h2 className="publisher-dashboard-title">Uploading...</h2>
+          <div className="publisher-loading-bar"></div>
         </div>
       </div>
     );
   }
 
-  // Mode: Upload Form
+  // ✅ Upload mode
   if (mode === "upload") {
     return (
       <UploadCourse
@@ -62,20 +94,27 @@ function PublisherDashboard() {
     );
   }
 
-  // Mode: Dashboard
+  // ✅ Main dashboard
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-card">
-        <h1 className="dashboard-title">Publisher Dashboard</h1>
-        <button className="btn-logout" onClick={() => setMode("upload")}>
+    <div className="publisher-dashboard-container">
+      <div className="publisher-dashboard-card">
+        <h1 className="publisher-dashboard-title">Publisher Dashboard</h1>
+
+        <button className="btn-primary" onClick={() => setMode("upload")}>
           Upload Course +
         </button>
-        <div style={{ marginTop: "20px" }}>
-          <h3>Your Published Courses</h3>
-          <p>Course list will appear here...</p>
-        </div>
+
+        <PublishedCoursesList
+          courses={publishedCourses}
+          onCourseDeleted={(deletedCourseId) => {
+            setPublishedCourses((prevCourses) =>
+              prevCourses.filter((course) => course._id !== deletedCourseId)
+            );
+          }}
+        />
       </div>
     </div>
   );
 }
+
 export default PublisherDashboard;

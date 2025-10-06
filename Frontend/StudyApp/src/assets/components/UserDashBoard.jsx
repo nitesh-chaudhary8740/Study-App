@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import axios from "axios";
+
 import "./css/Dashboard.css";
 import { StudyContext } from "./StudyContext";
 
 const UserDashBoard = () => {
 
   const values = useContext(StudyContext);
- 
+ console.log("redirected")
   if (values.isLoading) {
     return (
       <div className="dashboard-loading">
@@ -32,21 +32,7 @@ const UserDashBoard = () => {
           </div>
         </div>
 
-        <button
-          className="btn-normal"
-          onClick={async () => {
-            const response = await axios.post(
-              "http://localhost:8081/user/logout",
-              {},
-              { withCredentials: true }
-            );
-            const data = await response.data;
-            console.log("user logout", data);
        
-          }}
-        >
-          Logout
-        </button>
       </div>
     </div>
   );

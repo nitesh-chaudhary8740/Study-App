@@ -1,42 +1,48 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { StudyContext } from "./StudyContext";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export function StudyAppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  const isFetching = useRef(false); // 🚫 prevents concurrent requests
+  
 
-  // Fetch current user once when the app starts
   useEffect(() => {
     const fetchCurrentUser = async () => {
+      if (isFetching.current) return; // 👈 skip if already fetching
+      isFetching.current = true;
+
       try {
-        const { data } = await axios.get("http://localhost:8081/user/current-user", {
+        const response = await axios.get("http://localhost:8081/user/current-user", {
           withCredentials: true,
         });
-        setCurrentUser(data.data);
-      } catch (error) {
-        console.log("Not logged in or session expired:", error);
+        console.log("user fetched",response)
+        console.log("user fetched",response.data)
+        setCurrentUser(response.data.data);
+        toast.success("user fetched successfully")
+        return <Navigate to="/dashboard" replace/>
+        
+      } catch (err) {
+        console.log("Session invalid:", err);
         setCurrentUser(null);
-        navigate('/login')
-        console.log("wordked")
-        // Optionally navigate("/login") — but better let components handle redirects
       } finally {
+        isFetching.current = false;
         setIsLoading(false);
       }
     };
-    if(!currentUser){
-      fetchCurrentUser();
-    }
-  }, [navigate,currentUser]);
+
+    fetchCurrentUser();
+  }, []);
 
   const value = useMemo(
     () => ({
       currentUser,
       setCurrentUser,
       isLoading,
-      setIsLoading
+      setIsLoading,
     }),
     [currentUser, isLoading]
   );

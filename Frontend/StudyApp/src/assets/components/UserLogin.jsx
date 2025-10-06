@@ -39,8 +39,9 @@ export default function UserLogin() {
 
       const data = response?.data;
       console.log("my data",data)
-      values.setCurrentUser(data.data)
       values.setIsLoading(false)
+      values.setCurrentUser(data.data)
+ 
       navigate("/dashboard");
     } catch (error) {
       console.log("response error", error?.response?.data);

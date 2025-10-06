@@ -50,3 +50,8 @@ export const publishCourse = async (req, res) => {
       )
     );
 };
+export const fetchUserCourses = async (req,res)=>{
+  const user = req.user;
+  const allUserCourses = await Course.find({coursePublisher:user._id})
+  res.status(200).json(new API_Response(200,allUserCourses,"courses fetched successfully"))
+}

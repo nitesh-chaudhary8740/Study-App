@@ -1,11 +1,26 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import "../css/navbar.css";
+import "./css/navbar.css";
 import { StudyContext } from "./StudyContext";
+import ProfileMenu from "./ProfileMenu"; // import the profile menu
+import axios from "axios";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const values = useContext(StudyContext);
+
+  const handleLogout = async() => {
+    // Clear current user and session
+    const response =  await axios.post(
+        "http://localhost:8081/user/logout",
+        {},
+        { withCredentials: true }
+      );
+      console.log(response)
+    values.setCurrentUser(null);
+    localStorage.removeItem("currentUser");
+    console.log("Logged out!");
+  };
 
   return (
     <nav className="navbar">
@@ -20,15 +35,16 @@ function Navbar() {
             <Link to="/plans" className="navbar-link">
               Plans
             </Link>
-          { values?.currentUser && <>
-            <Link to="/publisher-dashboard" className="navbar-link">
-              Publisher
-            </Link>
-            <Link to="/publisher-dashboard" className="navbar-link">
-              My Learnings
-            </Link> 
-          </> 
-            }
+            {values?.currentUser && (
+              <>
+                <Link to="/publisher-dashboard" className="navbar-link">
+                  Publisher
+                </Link>
+                <Link to="/publisher-dashboard" className="navbar-link">
+                  My Learnings
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -38,9 +54,8 @@ function Navbar() {
         </div>
 
         {/* Right Section */}
-        { values.currentUser ? (
-          <span className="profile-icon">{values.currentProvider?values.currentProvider.fullName.charAt(0):
-          values.currentUser.fullName.charAt(0)}</span>
+        {values.currentUser ? (
+          <ProfileMenu onLogout={handleLogout} />
         ) : (
           <>
             <div className="navbar-actions">
@@ -52,28 +67,22 @@ function Navbar() {
               </Link>
             </div>
             <div className="navbar-mobile-toggle">
-              {/* this class element get visible through the css media query */}
               <button onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? "✖" : "☰"}
               </button>
             </div>
           </>
         )}
-
-        {/* Mobile Menu Button */}
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
+      {isOpen && !values.currentUser && (
         <div className="navbar-mobile-menu">
           <Link to="/explore" className="navbar-link">
             Explore
           </Link>
           <Link to="/plans" className="navbar-link">
             Plans
-          </Link>
-          <Link to="/publisher-dashboard" className="navbar-link">
-            Publisher
           </Link>
           <input type="text" placeholder="Search..." className="search-input" />
           <div className="mobile-actions">
