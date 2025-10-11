@@ -1,11 +1,15 @@
 import { customAlphabet } from "nanoid";
-import { Course } from "../models/courses.model.js";
+import Ffmpeg from "fluent-ffmpeg";
+import { Course, Module } from "../models/courses.model.js";
 import { ApiError } from "../utils/api.error.js";
 import { API_Response } from "../utils/api.response.js";
 import { validators } from "../utils/string.validation.js";
+import { uploadOnCloudinary } from "../utils/util.cloudinary.js";
 
 export const publishCourse = async (req, res) => {
   const user = req.user;
+
+  
   const { courseName, coursePrice, courseCategory } = req.body;
 
   // Validate required fields
@@ -55,3 +59,73 @@ export const fetchUserCourses = async (req,res)=>{
   const allUserCourses = await Course.find({coursePublisher:user._id})
   res.status(200).json(new API_Response(200,allUserCourses,"courses fetched successfully"))
 }
+export const fetchCourseById = async (req,res)=>{
+  const courseId = req.params.courseId;
+  const fetchedCourse = await Course.findById(courseId)
+  if(!fetchedCourse){
+    throw new ApiError(404,"unable to fetch the course")
+  }
+  res.status(200).json(new API_Response(200,fetchedCourse,"course fetched successfully"))
+}
+export const uploadCourseCoverImage = async(req,res) =>{
+  const courseId  = req.params.courseId;
+  const coverImage = req.files?.coverImage?.[0];
+  console.log("coverImage",coverImage)
+   if (!coverImage) {
+    throw new ApiError(400, "No image file provided");
+  }
+  if(!(coverImage.mimetype.startsWith("image/"))){
+    throw new ApiError(400,"image format no valid")
+  }
+  const fetchedCourse = await Course.findById(courseId)
+  if(!fetchedCourse){
+    throw new ApiError(404,"unable to fetch the course")
+  }
+  
+  const coverImageUploadResponse = await uploadOnCloudinary(coverImage.path,`study-app/courses/${fetchedCourse.courseName}/cover-image`)
+  fetchedCourse.courseCoverImage = coverImageUploadResponse.url;
+  fetchedCourse.save({validateBeforeSave:false})
+  
+   res.status(200).json(new API_Response(200,fetchedCourse,"image uploaded successfully"))
+}
+export const uploadModule = async (req, res) => {
+  const courseId = req.params.courseId;
+  const { moduleTitle } = req.body;
+  const moduleFile = req?.files?.moduleFile?.[0];
+
+  if (!moduleTitle || !moduleFile) {
+    throw new ApiError(400, "All fields are required", ["moduleTitle", "moduleFile"]);
+  }
+
+  const fetchedCourse = await Course.findById(courseId);
+  if (!fetchedCourse) {
+    throw new ApiError(404, "No course found!");
+  }
+
+  const response = await uploadOnCloudinary(
+    moduleFile.path,
+    `study-app/courses/${fetchedCourse.courseName}/modules/${moduleTitle}`
+  );
+if(!response){
+  throw new ApiError(500,"error in upload moduleFile")
+}
+let duration = 0;
+if(moduleFile.mimetype.startsWith("video/")){
+duration = await new Promise((resolve,reject)=>{
+  Ffmpeg.ffprobe(moduleFile.path,(err,data)=>{
+    if(err) reject(new ApiError(500,"Error is extacting duration"))
+      resolve(data.format.duration)
+  })
+})
+}
+ const moduleTempModel = new Module({
+    moduleTitle,
+    moduleContent: response.url,
+    moduleDuration:duration
+  });
+
+  fetchedCourse.courseModules.push(moduleTempModel);
+  await fetchedCourse.save({ validateBeforeSave: false });
+
+  res.status(200).json(new API_Response(200, fetchedCourse, "New module added successfully"));
+};

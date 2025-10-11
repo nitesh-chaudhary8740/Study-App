@@ -3,7 +3,7 @@ import { currentUser, loginUser, logoutUser, registerAsPublisher, registerUser }
 import { asyncHandler } from "../utils/asynchandler.js";
 import { upload } from "../middlewares/middleware.multer.js";
 import { verifyJWT } from "../middlewares/middleware.auth.js";
-import { fetchUserCourses, publishCourse } from "../controllers/course.controller.js";
+import { fetchCourseById, fetchUserCourses, publishCourse, uploadCourseCoverImage, uploadModule } from "../controllers/course.controller.js";
 const router = Router()
 
 router.route("/register").post(asyncHandler(registerUser))
@@ -22,6 +22,19 @@ router.route("/current-user").get(verifyJWT,asyncHandler(currentUser))
 router.route("/publisher-register").post(verifyJWT,asyncHandler(registerAsPublisher))
 router.route("/upload-course").post(verifyJWT,asyncHandler(publishCourse))
 router.route("/fetch-courses").get(verifyJWT,asyncHandler(fetchUserCourses))
+router.route("/manage-course/:courseId").get(verifyJWT,asyncHandler(fetchCourseById))
+router.route("/manage-course/update-image/:courseId").post(verifyJWT,upload.fields([
+    {
+        name:"coverImage",
+        maxCount:1
+    }
+]),asyncHandler(uploadCourseCoverImage))
+router.route("/manage-course/:courseId/add-module").post(verifyJWT,upload.fields([
+    {
+        name:"moduleFile",
+        maxCount:1
+    }
+]),asyncHandler(uploadModule))
 
 
 export default router

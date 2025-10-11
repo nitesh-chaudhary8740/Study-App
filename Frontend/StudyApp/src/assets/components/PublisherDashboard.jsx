@@ -13,7 +13,6 @@ function PublisherDashboard() {
   const [mode, setMode] = useState("dashboard"); // "dashboard" | "upload" | "loading"
 
   // ✅ Fetch publisher's courses
-  useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
@@ -26,7 +25,8 @@ function PublisherDashboard() {
         console.error("Error fetching courses:", error);
       }
     };
-
+  useEffect(() => {
+  
     if (values?.currentUser?.isPublisher) {
       fetchCourses();
     }
@@ -87,6 +87,7 @@ function PublisherDashboard() {
   if (mode === "upload") {
     return (
       <UploadCourse
+      fetchCourses ={fetchCourses}
         onCancel={() => setMode("dashboard")}
         onStartUpload={() => setMode("loading")}
         onFinishUpload={() => setMode("dashboard")}
