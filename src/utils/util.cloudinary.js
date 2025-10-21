@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs/promises"; // Use promises version for async
 import { configDotenv } from "dotenv";
+import { ApiError } from "./api.error.js";
 
 configDotenv();
 
@@ -22,6 +23,7 @@ export const uploadOnCloudinary = async (localFile, folderName) => {
 
     // Delete local file asynchronously
     try {
+      console.log("file deleted from local",localFile)
       await fs.unlink(localFile);
     } catch (err) {
       console.error("Failed to delete local file:", err);
@@ -41,3 +43,21 @@ export const uploadOnCloudinary = async (localFile, folderName) => {
     return null;
   }
 };
+export  const deleteFromCloudinaryFolder = async (folderPath,fileType)=>{
+try {
+  if (fileType ==="video"){
+    const res = await cloudinary.api.delete_resources_by_prefix(folderPath,{resource_type:"video"})
+    console.log("video resource deleted:",res)
+  }
+  else{
+    const res = await cloudinary.api.delete_resources_by_prefix(folderPath,{resource_type:"raw"})
+   console.log("raw resource deleted:",res)
+
+  }
+   const resOfFolder = await cloudinary.api.delete_folder(folderPath)
+   console.log(resOfFolder)
+} catch (error) {
+  console.log("error in deleting resource from the cloudinary",error)
+  throw new ApiError(500,"error in deleting cloudinary resources")
+}
+}

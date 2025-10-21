@@ -1,10 +1,11 @@
 import { customAlphabet } from "nanoid";
-import Ffmpeg from "fluent-ffmpeg";
+import ffprobe from 'ffprobe'
+import ffprobeStatic from 'ffprobe-static'
 import { Course, Module } from "../models/courses.model.js";
 import { ApiError } from "../utils/api.error.js";
 import { API_Response } from "../utils/api.response.js";
 import { validators } from "../utils/string.validation.js";
-import { uploadOnCloudinary } from "../utils/util.cloudinary.js";
+import { deleteFromCloudinaryFolder, uploadOnCloudinary } from "../utils/util.cloudinary.js";
 
 export const publishCourse = async (req, res) => {
   const user = req.user;
@@ -89,6 +90,10 @@ export const uploadCourseCoverImage = async(req,res) =>{
    res.status(200).json(new API_Response(200,fetchedCourse,"image uploaded successfully"))
 }
 export const uploadModule = async (req, res) => {
+  req.on("close",()=>{
+    console.log("singal aborted")
+    return res.status(300).json(new API_Response(300,{},"upload is cancel"))
+  })
   const courseId = req.params.courseId;
   const { moduleTitle } = req.body;
   const moduleFile = req?.files?.moduleFile?.[0];
@@ -102,26 +107,32 @@ export const uploadModule = async (req, res) => {
     throw new ApiError(404, "No course found!");
   }
 
+  let duration = 0;
+  const fileType = moduleFile.mimetype.startsWith("video/") ? "video" : "raw";
+try {
+  if (moduleFile.mimetype.startsWith("video/") ) {
+    const info = await ffprobe(moduleFile.path,{path:ffprobeStatic.path})
+    duration = Math.round((parseFloat(info?.streams?.[0].duration)/60))
+  }
+} catch (error) {
+  console.log("error in video parse",error)
+  throw new ApiError(500, "error in uploading parsing video")
+}
+
+  // ✅ Upload file to Cloudinary (deletes local file inside)
   const response = await uploadOnCloudinary(
     moduleFile.path,
-    `study-app/courses/${fetchedCourse.courseName}/modules/${moduleTitle}`
+    `study-app/courses/${fetchedCourse.courseName.trim()}/modules/${moduleTitle.trim()}`
   );
-if(!response){
-  throw new ApiError(500,"error in upload moduleFile")
-}
-let duration = 0;
-if(moduleFile.mimetype.startsWith("video/")){
-duration = await new Promise((resolve,reject)=>{
-  Ffmpeg.ffprobe(moduleFile.path,(err,data)=>{
-    if(err) reject(new ApiError(500,"Error is extacting duration"))
-      resolve(data.format.duration)
-  })
-})
-}
- const moduleTempModel = new Module({
+  if (!response) {
+    throw new ApiError(500, "Error uploading module file");
+  }
+  // ✅ Save module to course
+  const moduleTempModel = new Module({
     moduleTitle,
-    moduleContent: response.url,
-    moduleDuration:duration
+    moduleFile: response.url,
+    moduleDuration: duration,
+    moduleFileType:fileType
   });
 
   fetchedCourse.courseModules.push(moduleTempModel);
@@ -129,3 +140,30 @@ duration = await new Promise((resolve,reject)=>{
 
   res.status(200).json(new API_Response(200, fetchedCourse, "New module added successfully"));
 };
+
+//delete a module
+export const deleteModule = async (req,res)=>{
+  const {courseId,moduleId} = req.params;
+  console.log("courseId",courseId)
+  console.log("moduleId",moduleId)
+  const course = await Course.findById(courseId)
+  if(!course){
+    throw new ApiError(404, "course not found")
+  }
+ const module = course.courseModules.find((module)=>
+    moduleId ===module._id.toString()
+ )
+
+ if(!module){
+  console.log("module ",module)
+  throw new ApiError(404,"module not found")
+ }
+
+// await deleteFromCloudinaryFolder(`study-app/courses/${course.courseName}/modules/${module.moduleTitle}`,module.moduleFileType)
+
+  course.courseModules = course.courseModules.filter(module=> //remove the module
+    module._id.toString() !== moduleId
+  )
+  await course.save({validateBeforeSave:false})
+  res.status(200).json(new API_Response(200,course,"module deleted successfully"))
+}

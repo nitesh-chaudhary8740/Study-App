@@ -5,7 +5,8 @@ const moduleSchema = new Schema({
   moduleTitle: { type: String, required: true, trim: true },
   moduleDuration: { type: Number, default: 0 }, // in minutes
   moduleFile: { type: String, trim: true }, //this is now will store media
-  moduleOrder:{ type: Number,}
+  moduleFileType: { type: String, enum: ["video", "raw"], required: true },
+  moduleOrder:{ type: Number,},
 }, { _id: true });
 
 // ----- Review Schema -----
