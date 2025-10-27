@@ -1,1 +1,3 @@
-// export const uploadStream
+export const uploadStream = async (req,res,next) =>{
+    
+}
