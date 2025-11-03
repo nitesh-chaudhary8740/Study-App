@@ -26,6 +26,7 @@ const courseSchema = new Schema({
   courseCoverImage: { type: String, trim: true },
   coursePublisherName: { type: String, trim: true },
   coursePublisher: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  isCoursePublished:{type:Boolean,default:false},
 
   // ----- Course Progress -----
   courseModules: [moduleSchema],

@@ -1,14 +1,64 @@
-import React, {  useRef } from "react";
+import "./css/upload-progress-bar.css";
+import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import "./css/upload-progress-bar.css";
-import { useState } from "react";
-import { useEffect } from "react";
 
-// =============================================================
-const UploadProgressBar = ({ file, courseId, moduleTitle, onUploadComplete, onUploadCancel }) => {
-    const [progress, setProgress] = useState(0); 
+// Helper function to format bytes into readable MB/GB
+const formatBytes = (bytes, decimals = 2) => {
+    if (bytes === 0) return '0 MB';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    // log base(1024) number (bytes) = total power => formulae log(number)/log(base)= power
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+};
+
+export const UploadProgressBar = ({fetchCourse, file, courseId, moduleTitle, onUploadComplete, onUploadCancel }) => {
+    const [uploadStatus, setUploadStatus] = useState({
+        progress: 0, 
+        bytesUploaded: 0, 
+        totalSize: file.size, 
+        isDone: false
+    });
     const controllerRef = useRef(null);
+    const eventStreamRef = useRef(null)
+
+    const startSSEConnection = (uploadId) => {
+        const sseRoute = `http://localhost:8081/user/manage-course/${courseId}/sse/upload-status/${uploadId}`;
+        const eventSource = new EventSource(sseRoute);
+        eventStreamRef.current = eventSource;
+        
+        eventSource.onerror = (error) => {
+            console.error("Event stream closed due to error:", error);
+            eventSource.close();
+            onUploadCancel();
+        }
+        
+        eventSource.onmessage = (event) => { 
+            try {
+                const parsedData = JSON.parse(event.data);
+                
+                // CRITICAL FIX: Update the full status object (handles 'progress' typo fix)
+                setUploadStatus(prev => ({
+                    ...prev,
+                    ...parsedData,
+                    totalSize: prev.totalSize // Preserve client-side totalSize until server sends final total
+                }));
+                
+                if (parsedData.isDone) {
+                    toast.success("Module added successfully!");
+                    eventSource.close();
+                    fetchCourse()
+                    onUploadComplete(parsedData.data);
+                }
+            } catch (e) {
+                console.error("Error parsing SSE JSON or processing data:", e, event.data);
+                eventSource.close();
+                onUploadCancel();
+            }
+        };
+    };
 
     const handleUpload = async () => {
         const formData = new FormData();
@@ -26,69 +76,77 @@ const UploadProgressBar = ({ file, courseId, moduleTitle, onUploadComplete, onUp
                     signal: controller.signal,
                     withCredentials: true,
                     headers: { "Content-Type": "multipart/form-data" },
-                    
-                    // CRITICAL FIX: Explicitly disable retries 
                     'axios-retry': { retries: 0 }, 
-                    timeout: 300000, // 5 minute timeout
-
-                   
+                    timeout: 300000, 
                 }
             );
             
-            toast.success("Module added successfully!");
-            onUploadComplete(res.data.data); 
-
+            const uploadId = res.data.data;
+            startSSEConnection(uploadId);
+            
+            // CRITICAL FIX: Removed premature onUploadComplete call.
         } catch (err) {
             if (err.name === "CanceledError" || (axios.isCancel(err))) {
                 toast.info("Upload canceled by user.");
-            } 
-            else {
-                console.error("Upload failed (Client-side error log):", err);
-                if (err.response) {
-                    toast.error(`Upload failed: ${err.response.data.message || 'Server error.'}`);
-                } 
-                else {
-                    toast.error("Upload failed! Server connection lost.");
-                }
+            } else {
+                console.error("Upload failed:", err);
+                const message = err.response ? err.response.data.message : 'Server connection lost.';
+                toast.error(`Upload failed: ${message}`);
             }
-            onUploadCancel(); // Reset the UI
+            onUploadCancel(); 
         }
     };
 
     const handleCancel = () => {
         if (controllerRef.current) controllerRef.current.abort();
+        if (eventStreamRef.current) eventStreamRef.current.close();
+        onUploadCancel();
     };
 
-    // Start upload automatically when component mounts
     useEffect(() => {
-      if(controllerRef.current) return;
-        handleUpload();
+        if (!controllerRef.current) {
+            handleUpload();
+        }
+        
+        return () => {
+             if (eventStreamRef.current) eventStreamRef.current.close();
+        };
     }, []);
+
+    const currentProgress = parseFloat(uploadStatus.progress) || 0;
+    const uploadedMB = formatBytes(uploadStatus.bytesUploaded || 0, 2);
+    const totalMB = formatBytes(uploadStatus.totalSize || file.size, 2);
 
     return (
         <div className="upload-container">
             <h4>Uploading: {moduleTitle}</h4>
+            
+            {/* Display Upload Status (Done/Total Size) */}
             <div className="file-info">
-                File Size: <span>{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
+                Uploaded: 
+                <span className="file-size-status">
+                    {uploadedMB} / {totalMB}
+                </span>
             </div>
             
             <div className="progress-wrapper">
                 <div 
                     className="progress-bar" 
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${currentProgress}%` }}
                 >
-                    <div className="progress-percent">{progress}%</div>
+                    {/* Display Percentage on the right side */}
+                    <div className="progress-percent">{Math.floor(currentProgress)}%</div>
                 </div>
             </div>
             
             <button 
                 className="btn btn-danger" 
                 onClick={handleCancel}
+                disabled={uploadStatus.isDone}
             >
-                Cancel Upload
+                {uploadStatus.isDone ? "Complete" : "Cancel Upload"}
             </button>
         </div>
     );
 };
 
-export default UploadProgressBar;

@@ -5,6 +5,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./css/Auth.css";
 
 import { StudyContext } from "./StudyContext";
+import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 export default function UserLogin() {
   
@@ -27,6 +29,7 @@ export default function UserLogin() {
   };
 
   const handleSubmit = async (event) => {
+  //  toast.success("tried")
     event.preventDefault();
     console.log("Login data submitted:", formData);
 
@@ -44,6 +47,7 @@ export default function UserLogin() {
  
       navigate("/dashboard");
     } catch (error) {
+      toast.error(`${error}`)
       console.log("response error", error?.response?.data);
       console.error(error);
     }

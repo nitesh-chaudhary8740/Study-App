@@ -14,7 +14,9 @@ import ProtectedDashBoardRoute from "./assets/components/ProtectedDashBoardRoute
 import Home from "./assets/components/Home";
 import ManageCourse from "./assets/components/ManageCourse";
 
+
 function App() {
+  
   return (
     <Router>
       <StudyAppProvider>

@@ -4,11 +4,13 @@ import { v2 as cloudinary } from "cloudinary";
 import { ApiError } from "./api.error.js";
 // import { ApiError } from "./api.error.js"; // CRITICAL FIX: Ensure path is correct for your project
 import { promisify } from "util"; // Required for cleanup in the controller
+import { uploads } from "../controllers/course.controller.js";
+// import { sendData } from "../controllers/course.controller.js";
 
 // Utility to promisify fs.unlink
 export const unlinkFile = promisify(fs.unlink);
 
-export const streamUploadToCloudinary = (moduleFile, folderPath, req) => {
+export const streamUploadToCloudinary =  (moduleFile, folderPath, req,uploadId) => {
   // Use bytes for total size for precise comparison
   const totalSize = fs.statSync(moduleFile.path).size;
   let bytesUploaded = 0;
@@ -30,22 +32,36 @@ export const streamUploadToCloudinary = (moduleFile, folderPath, req) => {
           console.error(`[Cloudinary Error] Stream ID: ${streamId}`, error);
           return reject(new ApiError(500, "Error uploading module file to Cloudinary"));
         }
-        console.log(`upload done: ${streamId}`);
+        console.log(`cloudinary writable stram callback | stream upload done: ${streamId}`);
+        uploads.set(uploadId,{isDone:false,totalSize,bytesUploaded:totalSize,progress:100.00})
+        const tempSetTimeOut =  setTimeout(() => {
+          uploads.set(uploadId,{isDone:true,totalSize,bytesUploaded:totalSize,progress:100.00})
+           clearTimeout(tempSetTimeOut)
+        }, 500);
+       
         resolve(data);
       }
     );
 
     fileReadableStream.on("data", (chunk) => {
-      bytesUploaded += chunk.length;
       
-      const uploadedKB = bytesUploaded / 1024;
-      const totalKB = totalSize / 1024;
-      
+      bytesUploaded += chunk.length;      
+      let uploadedKB = bytesUploaded / 1024;
+      let totalKB = totalSize / 1024;  
+      let progress = ((bytesUploaded*100)/totalSize).toFixed(2)
       // Log progress in KB
-      if (totalKB > uploadedKB) {
-        console.log(` ${streamId} Uploaded: ${uploadedKB.toFixed(0)}kb/${totalKB.toFixed(0)}kb`);
+      if (totalKB > uploadedKB) {  
+        // console.log(` ${streamId} Uploaded: ${uploadedKB.toFixed(0)}kb/${totalKB.toFixed(0)}kb`);
+        uploads.set(uploadId,{isDone:false,totalSize,bytesUploaded,progress})
       }
-    });
+      
+        
+
+      
+     
+     
+    }); 
+    
 
     fileReadableStream.on("error", (err) => {
       if (uploadFinished) return;

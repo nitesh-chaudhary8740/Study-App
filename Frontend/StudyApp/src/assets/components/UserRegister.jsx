@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./css/Auth.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function UserRegister() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function UserRegister() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    toast.done("register requested")
     try {
       const response = await axios.post(
         "http://localhost:8081/user/register",

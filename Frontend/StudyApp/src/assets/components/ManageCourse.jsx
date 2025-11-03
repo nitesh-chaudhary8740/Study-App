@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "./css/manage-course.css";
 import ModuleList from "./ModuleList";
-import UploadProgressBar from "./UploadProgressBar";
+    import {UploadProgressBar} from "./UploadProgressBar";
 
 const ManageCourse = () => {
     const { courseId } = useParams();
@@ -12,6 +12,7 @@ const ManageCourse = () => {
 
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [courseImg, setCourseImg] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadFile, setUploadFile] = useState(null); // file to upload
     const [isSubmitting, setIsSubmitting] = useState(false); // State to prevent double click
@@ -23,8 +24,7 @@ const ManageCourse = () => {
     const [filePreview, setFilePreview] = useState(null);
 
     // Fetch course data
-    useEffect(() => {
-        const fetchCourse = async () => {
+    const fetchCourse = async () => {
             try {
                 const res = await axios.get(
                     `http://localhost:8081/user/manage-course/${courseId}`,
@@ -39,8 +39,9 @@ const ManageCourse = () => {
                 setLoading(false);
             }
         };
+    useEffect(() => {
         fetchCourse();
-    }, [courseId]);
+    }, []);
 
     // Delete module (NOTE: Using window.confirm for now, though a custom modal is better)
     const handleDeleteModule = async (moduleId) => {
@@ -85,7 +86,20 @@ const ManageCourse = () => {
         setUploading(false);
         setIsSubmitting(false); // Reset submitting state
     };
-
+    const handleUploadCoverImage = async ()=>{
+        try {
+            const formdata = new FormData();
+            formdata.append("coverImage",courseImg)
+            console.log(courseImg ,typeof courseImg)
+            const response = await axios.post(`http://localhost:8081/user/manage-course/update-image/${courseId}`,formdata,{withCredentials:true})
+            // console.log(response)
+            setCourse(response.data.data)
+            toast.success("course cover image uploaded successfully")
+        } catch (error) {
+           console.log("error",error) 
+           toast.error("error is uploading coverimage")
+        }
+    }
     const handleUploadCancel = () => {
         setUploading(false);
         setIsSubmitting(false); // Reset submitting state
@@ -103,7 +117,22 @@ const ManageCourse = () => {
                 ← Back to Dashboard
             </button>
             <h1>Manage Course: {course?.courseName || "Loading..."}</h1>
-
+            <div className="course-image-section">
+                {
+                    course.courseCoverImage?
+                    <img src={course.courseCoverImage}></img>:
+                    <span>Course image has not uploaded</span>
+                }
+                {
+                    <h2>
+                        Upload Course Image
+                        <input type="file" onChange={(e)=>{
+                        setCourseImg(e.target.files[0])
+                        }} />
+                        <button onClick={handleUploadCoverImage}>Upload Image</button>
+                    </h2>
+                }
+            </div>
             {/* --- Modules Section --- */}
             <div className="module-section">
                 <h2>Modules</h2>
@@ -164,6 +193,7 @@ const ManageCourse = () => {
                 ) : (
                     // Show Upload Progress Bar when uploading
                     <UploadProgressBar
+                        fetchCourse={fetchCourse}
                         file={uploadFile}
                         courseId={courseId}
                         moduleTitle={newModule.moduleTitle}

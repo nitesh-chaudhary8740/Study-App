@@ -83,6 +83,7 @@ export const fetchCourseById = async (req, res) => {
 export const uploadCourseCoverImage = async (req, res) => {
   const courseId = req.params.courseId;
   const coverImage = req.files?.coverImage?.[0];
+  console.log(coverImage,typeof coverImage)
   console.log("coverImage", coverImage);
   if (!coverImage) {
     throw new ApiError(400, "No image file provided");
@@ -112,9 +113,7 @@ export const uploadCourseCoverImage = async (req, res) => {
 
 export const uploadModule = async (req, res) => {
   const nanoId = customAlphabet(`R1T2Y3U4I5O6P7A8S9D0`, 6);
-  // 🛑 STEP 1: LOG UNIQUE REQUEST ID IMMEDIATELY 🛑
-    const requestId = nanoId();
-    console.log(`\n--- REQUEST RECEIVED --- ID: ${requestId}`);
+    const uploadId = nanoId();
   const courseId = req.params.courseId;
   const { moduleTitle } = req.body;
   const moduleFile = req?.files?.moduleFile?.[0];
@@ -125,10 +124,13 @@ export const uploadModule = async (req, res) => {
     if (tempFilePath) await unlinkFile(tempFilePath).catch(console.error);
     throw new ApiError(400, "Module title and file are required");
   }
-
-  try {
     const fetchedCourse = await Course.findById(courseId);
     if (!fetchedCourse) throw new ApiError(404, "Course not found");
+ res
+      .status(201)
+      .json(new API_Response(200, uploadId, "upload id successfully"));
+  try {
+
 
     // --- 1. Determine Duration ---
     const fileType = moduleFile.mimetype.startsWith("video/") ? "video" : "raw";
@@ -142,7 +144,7 @@ export const uploadModule = async (req, res) => {
     const folderName = `study-app/courses/${fetchedCourse.courseName.trim()}/modules/${moduleTitle.trim()}`;
     
     // AWAIT ensures code only proceeds if the Promise RESOLVES (upload success)
-    const data = await streamUploadToCloudinary(moduleFile, folderName, req);
+    const data = await streamUploadToCloudinary(moduleFile, folderName, req,uploadId);
 
     // --- 3. Database Write (ONLY on Success) ---
     const moduleTempModel = new Module({
@@ -158,9 +160,7 @@ export const uploadModule = async (req, res) => {
     // --- 4. SUCCESS Cleanup and Response ---
     await unlinkFile(tempFilePath).catch(console.error);
 
-    res
-      .status(200)
-      .json(new API_Response(200, fetchedCourse, "Module uploaded successfully"));
+   
 
   } catch (error) {
     // --- 5. FAILURE Cleanup ---
@@ -172,6 +172,39 @@ export const uploadModule = async (req, res) => {
     throw error;
   }
 };
+//sse route setup
+export const uploads = new Map()
+export const SSEConnection = async(req,res)=>{
+  console.log("sse started")
+  const {uploadId} = req.params;
+  // const myId = req.params.uploadId
+  console.log("uploadId is",uploadId)
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders(); // Send headers immediately
+
+    console.log("new upload intialized",uploadId)
+  
+    const interval = setInterval(() => {
+     const upload = uploads.get(uploadId)
+     console.log("upload is ",upload)
+   if(!upload.isDone){
+    console.log("progres of ",uploadId,upload.progress)
+    res.write(`data:${JSON.stringify(upload)}\n\n`)
+   }
+   else{
+    res.write(`data:${JSON.stringify(upload)}\n\n`)
+     clearInterval(interval)
+     console.log("sse interval clerared")
+   }
+   },1000);
+  req.on("close",()=>{
+    uploads.delete(uploadId)
+    console.log("connection close for",uploadId)
+    res.end()
+  })
+}
 
 //delete a module
 export const deleteModule = async (req, res) => {
@@ -191,10 +224,10 @@ export const deleteModule = async (req, res) => {
     throw new ApiError(404, "module not found");
   }
 
-  // await deleteFromCloudinaryFolder(
-  //   `study-app/courses/${course.courseName}/modules/${module.moduleTitle}`,
-  //   module.moduleFileType
-  // );
+  await deleteFromCloudinaryFolder(
+    `study-app/courses/${course.courseName}/modules/${module.moduleTitle}`,
+    module.moduleFileType
+  );
 
   course.courseModules = course.courseModules.filter(
     (
