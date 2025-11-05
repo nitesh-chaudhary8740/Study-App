@@ -2,19 +2,12 @@ import "./css/upload-progress-bar.css";
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { formatBytes } from "./util.functions.js";
 
 // Helper function to format bytes into readable MB/GB
-const formatBytes = (bytes, decimals = 2) => {
-    if (bytes === 0) return '0 MB';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    // log base(1024) number (bytes) = total power => formulae log(number)/log(base)= power
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-};
 
-export const UploadProgressBar = ({fetchCourse, file, courseId, moduleTitle, onUploadComplete, onUploadCancel }) => {
+
+export const UploadProgressBar = ({course,fetchCourse, file, courseId, moduleTitle, onUploadComplete, onUploadCancel }) => {
     const [uploadStatus, setUploadStatus] = useState({
         progress: 0, 
         bytesUploaded: 0, 
@@ -64,6 +57,7 @@ export const UploadProgressBar = ({fetchCourse, file, courseId, moduleTitle, onU
         const formData = new FormData();
         formData.append("moduleTitle", moduleTitle);
         formData.append("moduleFile", file);
+        formData.append("moduleOrder",course.courseModules.length||0)
 
         const controller = new AbortController();
         controllerRef.current = controller;

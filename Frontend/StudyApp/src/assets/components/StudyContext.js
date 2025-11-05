@@ -6,5 +6,7 @@ import { createContext } from "react";
     setCurrentUser:()=>{},
     isLoading:true,
     setIsLoading:()=>{},
+    // course:null,
+    // setCourse:()=>{}
 
 })

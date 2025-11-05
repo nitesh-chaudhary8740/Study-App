@@ -1,21 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./css/PublisherDashboard.css";
+import { StudyContext } from "./StudyContext";
 
-function PublishedCoursesList({ courses, onCourseDeleted }) {
+function PublishedCoursesList({ courses,  }) {
   const navigate = useNavigate();
+  const values = useContext(StudyContext)
 
   const handleDelete = async (courseId) => {
+    console.log(courseId)
     if (!window.confirm("Are you sure you want to delete this course?")) return;
 
     try {
-      await axios.delete(`http://localhost:8081/course/${courseId}`, {
+     const response =  await axios.delete(`http://localhost:8081/user/delete-course/${courseId}`, {
         withCredentials: true,
       });
+      values.setCurrentUser(response.data.data)
       toast.success("Course deleted successfully!");
-      onCourseDeleted && onCourseDeleted(courseId);
     } catch (error) {
       toast.error("Failed to delete course.");
       console.error(error);

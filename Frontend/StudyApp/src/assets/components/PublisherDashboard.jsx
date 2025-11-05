@@ -107,11 +107,7 @@ function PublisherDashboard() {
 
         <PublishedCoursesList
           courses={publishedCourses}
-          onCourseDeleted={(deletedCourseId) => {
-            setPublishedCourses((prevCourses) =>
-              prevCourses.filter((course) => course._id !== deletedCourseId)
-            );
-          }}
+          fetchCourses={fetchCourses}
         />
       </div>
     </div>

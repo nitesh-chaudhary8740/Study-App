@@ -6,6 +6,7 @@ const moduleSchema = new Schema({
   moduleDuration: { type: Number, default: 0 }, // in minutes
   moduleFile: { type: String, trim: true }, //this is now will store media
   moduleFileType: { type: String, enum: ["video", "raw"], required: true },
+  moduleDescription:{type:String,trim:true},
   moduleOrder:{ type: Number,},
 }, { _id: true });
 
@@ -51,7 +52,7 @@ courseSchema.pre("save", function(next) {
 
   // Recalculate average rating
   if (this.courseReviews.length > 0) {
-    const avg = this.courseReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / this.courseReviews.length;
+    const avg = this.courseReviews.reduce((acc, r) => acc + (r.rating || 0),0) / this.courseReviews.length;
     this.averageRating = Math.round(avg * 10) / 10; // round to 1 decimal
   } else {
     this.averageRating = 0;

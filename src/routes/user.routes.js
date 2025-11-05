@@ -3,7 +3,7 @@ import { currentUser, loginUser, logoutUser, registerAsPublisher, registerUser }
 import { asyncHandler } from "../utils/asynchandler.js";
 import { upload } from "../middlewares/middleware.multer.js";
 import { verifyJWT } from "../middlewares/middleware.auth.js";
-import { deleteModule, fetchCourseById, fetchUserCourses, publishCourse, SSEConnection, uploadCourseCoverImage, uploadModule } from "../controllers/course.controller.js";
+import { deleteCourseById, deleteModule, fetchCourseById, fetchUserCourses, publishCourse, SSEConnection, uploadCourseCoverImage, uploadModule } from "../controllers/course.controller.js";
 const router = Router()
 
 router.route("/register").post(asyncHandler(registerUser))
@@ -27,6 +27,7 @@ router.route("/publisher-register").post(verifyJWT,asyncHandler(registerAsPublis
 router.route("/upload-course").post(verifyJWT,asyncHandler(publishCourse))
 router.route("/fetch-courses").get(verifyJWT,asyncHandler(fetchUserCourses))
 router.route("/manage-course/:courseId").get(verifyJWT,asyncHandler(fetchCourseById))
+router.route("/delete-course/:courseId").delete(verifyJWT,asyncHandler(deleteCourseById))
 //coverImage upload
 router.route("/manage-course/update-image/:courseId").post(verifyJWT,upload.fields([
     {
@@ -34,12 +35,7 @@ router.route("/manage-course/update-image/:courseId").post(verifyJWT,upload.fiel
         maxCount:1
     }
 ]),asyncHandler(uploadCourseCoverImage))
-router.route("/manage-course/:courseId/add-module").post(verifyJWT,upload.fields([
-    {
-        name:"moduleFile",
-        maxCount:1
-    }
-]),asyncHandler(uploadModule))
+router.route("/manage-course/add-module/:courseId").post(verifyJWT,asyncHandler(uploadModule))
 router.route("/manage-course/:courseId/sse/upload-status/:uploadId").get(asyncHandler(SSEConnection))
 router.route("/manage-course/:courseId/delete-module/:moduleId").delete(verifyJWT,asyncHandler(deleteModule))
 

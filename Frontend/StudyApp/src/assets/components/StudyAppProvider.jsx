@@ -8,7 +8,7 @@ export function StudyAppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isFetching = useRef(false); // 🚫 prevents concurrent requests
-  
+  // const [course, setCourse] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {

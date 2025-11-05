@@ -13,18 +13,139 @@ h1 {
   margin-bottom: 20px;
 }
 
-.course-cover-section {
+/* --- Course Image Section Styles --- */
+.course-image-section {
   margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
 }
 
-.cover-preview {
+.course-image-section h2 {
+  font-size: 18px;
+  color: #1e3a8a;
+  margin-bottom: 15px;
+  border-bottom: 1px dashed #d1d5db;
+  padding-bottom: 10px;
+}
+
+.image-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.image-preview {
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
   height: 200px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 10px;
+  border: 2px dashed #93c5fd;
+}
+
+.no-image-text {
+  display: block;
+  width: 350px;
+  height: 200px;
+  line-height: 200px;
+  text-align: center;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  background: #f3f4f6;
+  font-size: 14px;
+}
+
+.image-upload-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.image-upload-controls input[type="file"] {
+  /* Hide the default file input text */
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.file-input-label {
+  background: #6b7280; /* Gray for selection */
+  color: white;
+  padding: 0px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 14px;
+  /* Ensure label looks like a button */
+  line-height: 18px;
+  height: 35px; /* Fixed height to align with buttons */
+  display: flex;
+  align-items: center;
+}
+
+.file-input-label:hover {
+  background: #4b5563;
+}
+
+.upload-button {
+  background: #10b981; /* Green for action */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+  height: 34px;
+}
+
+.upload-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.upload-button:hover:not(:disabled) {
+  background: #059669;
+}
+
+.btn-cancel-file {
+  background: #dc2626; /* Red color for removal/cancellation */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-cancel-file:hover {
+  background: #b91c1c;
+}
+
+/* --- Existing Module/General Styles --- */
+
+.btn-back {
+  background: #f3f4f6;
+  color: #374151;
   border: 1px solid #d1d5db;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background 0.2s ease;
+}
+
+.btn-back:hover {
+  background: #e5e7eb;
 }
 
 .module-section {
@@ -35,6 +156,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  list-style: none;
+  padding: 0;
 }
 
 .module-card {
@@ -79,30 +202,19 @@ h1 {
   gap: 10px;
 }
 
-.upload-label {
-  cursor: pointer;
-  background: #2563eb;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s ease;
+.add-module-form-wrapper h3 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #1e3a8a;
 }
 
-.upload-label:hover {
-  background: #1d4ed8;
-}
-
-.add-module-form {
-  margin-top: 40px;
+.module-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.add-module-form input,
-.add-module-form textarea {
+.module-form .text-input {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
@@ -111,12 +223,44 @@ h1 {
   box-sizing: border-box;
 }
 
-.add-module-form textarea {
-  resize: vertical;
-  min-height: 80px;
+.module-form .file-label {
+    cursor: pointer;
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    max-width: 200px;
 }
 
-.add-module-form button {
+.module-form .file-label:hover {
+    background: #1d4ed8;
+}
+
+.module-form .file-input {
+    /* Hide the actual file input */
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.file-preview-text {
+    font-size: 14px;
+    color: #374151;
+    margin: 5px 0 10px 0;
+}
+
+.file-name {
+    font-weight: 600;
+    color: #1e3a8a;
+}
+
+.btn-submit {
   align-self: flex-start;
   background: #1e3a8a;
   color: white;
@@ -127,23 +271,13 @@ h1 {
   transition: background 0.2s ease;
 }
 
-.add-module-form button:hover {
+.btn-submit:hover:not(:disabled) {
   background: #1d4ed8;
 }
 
-button.btn-secondary {
-  background: #6b7280;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: background 0.2s ease;
-}
-
-button.btn-secondary:hover {
-  background: #4b5563;
+.btn-submit:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
 }
 
 .loading-text {
