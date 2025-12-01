@@ -1,0 +1,270 @@
+/* --- Global Variables and Base Utilities --- */
+:root {
+    --primary-blue: #1e3a8a;
+    --accent-orange: #f59e0b;
+    --hover-orange: #d97706;
+    --text-dark: #374151;
+    --bg-light: #ffffff;
+    --border-color: #e5e7eb;
+    --delete-red: #ef4444;
+}
+
+/* Helper Classes */
+.flex-bw {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.flex {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+.flex-end {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* --- 1. Module List Container --- */
+.module-list {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+}
+.no-modules {
+    padding: 15px;
+    text-align: center;
+    color: var(--text-dark);
+    font-style: italic;
+}
+
+/* --- 2. Individual Module Card --- */
+.module-card {
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Top Container (Title and Action Icons) */
+.module-top-cont {
+    padding: 15px;
+    border-bottom: 1px solid transparent; 
+    transition: border-bottom 0.2s;
+    /* Cursor change when not in editing mode */
+    cursor: pointer; 
+}
+.module-card.expanded .module-top-cont,
+.module-card.editing .module-top-cont { /* Separator above content/description when expanded or editing */
+    border-bottom: 1px solid var(--border-color);
+}
+
+.module-top-left {
+    gap: 15px;
+}
+.module-order-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+.module-icon {
+    color: var(--primary-blue);
+}
+
+/* Title Input (Edit Mode) */
+.module-title-input {
+    font-size: 1em;
+    padding: 5px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 5px;
+    width: 250px;
+    outline: none;
+}
+.module-title-input:focus {
+    border-color: var(--primary-blue);
+}
+
+
+/* --- 3. Buttons (Icons and Actions) --- */
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s, opacity 0.2s;
+    color: var(--text-dark);
+}
+.icon-btn:hover {
+    background-color: #f3f4f6;
+}
+/* Disabled State */
+.icon-btn:disabled {
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    background-color: transparent; 
+}
+
+.edit-btn:hover { color: var(--accent-orange); }
+.delete-btn { color: var(--delete-red); }
+.delete-btn:hover { color: #b91c1c; }
+.expand-btn { margin-left: 15px; }
+
+
+/* --- 4. Editing Action Buttons --- */
+.editing-actions {
+    /* Positioned at the bottom of the card */
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: #f7f7f7;
+}
+
+.btn {
+    padding: 8px 15px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-save {
+    background-color: var(--primary-blue);
+    color: white;
+}
+.btn-save:hover { background-color: #1c337a; }
+
+.btn-cancel {
+    background-color: #d1d5db;
+    color: var(--text-dark);
+}
+.btn-cancel:hover { background-color: #9ca3af; }
+
+
+/* --- 5. File Upload / Actions --- */
+.module-file-section {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95em;
+}
+
+/* Hide native file input */
+.hidden-input-file {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.module-duration {
+    padding: 2px 8px;
+    background-color: #f59e0b1a; 
+    color: var(--accent-orange);
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85em;
+}
+
+.upload-label {
+    color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+.upload-label:hover {
+    background-color: #eff6ff;
+}
+
+.file-name-display {
+    font-style: italic;
+    color: #6b7280;
+}
+
+/* File Action Buttons */
+.file-replace-btn, .file-delete-btn {
+    font-size: 0.9em;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: #f3f4f6;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+.file-replace-btn:hover { background-color: #e5e7eb; }
+.file-delete-btn { color: var(--delete-red); }
+.file-delete-btn:hover { background-color: #fee2e2; }
+
+
+/* --- 6. Description Section --- */
+.module-description {
+    padding: 15px;
+    font-size: 0.95em;
+    color: #4b5563;
+    border-bottom: 1px solid transparent; /* Default state */
+}
+.module-description strong {
+    color: var(--text-dark);
+    margin-right: 5px;
+}
+
+/* Description Textarea (Edit Mode) */
+.module-description-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.95em;
+    resize: vertical;
+    outline: none;
+}
+.module-description-textarea:focus {
+    border-color: var(--primary-blue);
+}
+
+/* --- 7. Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .module-top-cont {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .module-top-section-buttons {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .module-file-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .file-action-buttons {
+        margin-top: 5px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    .file-replace-btn, .file-delete-btn {
+        flex-grow: 1;
+        justify-content: center;
+    }
+    .editing-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .btn {
+        width: 100%;
+    }
+}

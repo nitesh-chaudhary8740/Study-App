@@ -6,7 +6,7 @@ import { validators } from "../utils/string.validation.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-    console.log("generating...");
+
     const user = await User.findById(userId);
 
     const accessToken = await user.generateAccessToken();
@@ -109,7 +109,7 @@ console.log("after passwword check")
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       foundedUser._id
     );
-    console.log(accessToken, refreshToken);
+    
     const loggedInUser = await User.findById(foundedUser._id).select(
       "-password -refreshToken"
     );

@@ -15,7 +15,7 @@ function AddModuleForm({setCourse,courseId}) {
             return;
         }
         try {
-            const response = await axios.post(`http://localhost:8081/user/manage-course/add-module/${courseId}`)
+            const response = await axios.post(`http://localhost:8081/user/manage-course/add-module/${courseId}`,newModule,{withCredentials:true})
             console.log(response.data.data)
             setCourse(response.data.data)
             setNewModule({

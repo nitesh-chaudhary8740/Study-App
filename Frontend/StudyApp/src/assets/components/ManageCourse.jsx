@@ -22,8 +22,8 @@ const ManageCourse = () => {
                 `http://localhost:8081/user/manage-course/${courseId}`,
                 { withCredentials: true }
             );
-            const fetchedCourse = { ...res.data.data, courseModules: res.data.data.courseModules || [] };
-            setCourse(fetchedCourse);
+            console.log(res.data)
+            setCourse(res.data.data);
         } catch (err) {
             console.error(err);
             toast.error("Failed to fetch course details");
@@ -45,11 +45,11 @@ const ManageCourse = () => {
             </button>
             <h1>Manage Course: {course?.courseName || "Course"}</h1>
           
-        <ManageCourseCoverImage course={course} setCourse={setCourse} courseId={courseId}/>  {/* --- Course Image Section --- */}
+        <ManageCourseCoverImage course={course} setCourse={setCourse}  courseId={courseId}/>  {/* --- Course Image Section --- */}
          
-        <ModuleList modules={course?.courseModules || []}  />   {/* --- Modules Section --- */}
+        <ModuleList modules={course?.courseModules || []} courseId={courseId} setCourse={setCourse}/>   {/* --- Modules Section --- */}
           
-        <AddModuleForm />{/* --- Add Module Form  --- */}
+        <AddModuleForm setCourse={setCourse}  courseId={courseId} />{/* --- Add Module Form  --- */}
                 
                     {/* <UploadProgressBar
                     course={course}

@@ -64,7 +64,7 @@ function ManageCourseCoverImage({course,setCourse,courseId}) {
     };
   return (
      <div className="course-image-section">
-                <h2>Upload Course Image</h2>
+                <h2>Upload Course Image </h2>
                 <div className="image-preview-wrapper">
                     
                     {/* Image Preview: Use local URL if available, otherwise use remote URL */}

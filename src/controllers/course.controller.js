@@ -80,7 +80,7 @@ export const fetchCourseById = async (req, res) => {
   }
   res
     .status(200)
-    .json(new API_Response(200, {}, "course fetched successfully"));
+    .json(new API_Response(200, fetchedCourse, "course fetched successfully"));
 };
 export const deleteCourseById = async (req, res) => {
   const user =req.user
@@ -95,8 +95,6 @@ export const deleteCourseById = async (req, res) => {
 
   fetchedUser.save({validateBeforeSave:false})
   const updatedUser = await User.findById(user._id)
-  console.log(updatedUser.publishedCourses)
-
   res
     .status(200)
     .json(new API_Response(200, updatedUser, "course deleted successfully"));
@@ -136,7 +134,9 @@ export const uploadCourseCoverImage = async (req, res) => {
 
 export const uploadModule = async (req, res) => {
   const courseId = req.params.courseId;
+  console.log(courseId)
   const {moduleTitle,moduleDescription} = req.body;
+  console.log(req.body)
   if (!moduleTitle) {
     throw new ApiError(400, "Module title required");
   }
@@ -145,6 +145,7 @@ export const uploadModule = async (req, res) => {
     const moduleTempModel = new Module({
       moduleTitle,
       moduleDescription,
+      moduleOrder:fetchedCourse.courseModules.length
     });
     fetchedCourse.courseModules.push(moduleTempModel);
     await fetchedCourse.save({ validateBeforeSave: false });
@@ -248,6 +249,31 @@ export const SSEConnection = async(req,res)=>{
 //delete a module
 export const deleteModule = async (req, res) => {
   const { courseId, moduleId } = req.params;
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, "course not found");
+  }
+  const module = course.courseModules.find(
+    (module) => moduleId === module._id.toString()
+  );
+
+  if (!module) {
+    console.log("module ", module);
+    throw new ApiError(404, "module not found");
+  }
+
+  course.courseModules = course.courseModules.filter(
+    (
+      module //remove the module
+    ) => module._id.toString() !== moduleId
+  );
+  await course.save({ validateBeforeSave: false });
+  res
+    .status(200)
+    .json(new API_Response(200, course, "module deleted successfully"));
+};
+export const deleteModuleFile = async (req, res) => {
+  const { courseId, moduleId } = req.params;
   console.log("courseId", courseId);
   console.log("moduleId", moduleId);
   const course = await Course.findById(courseId);
@@ -278,3 +304,4 @@ export const deleteModule = async (req, res) => {
     .status(200)
     .json(new API_Response(200, course, "module deleted successfully"));
 };
+
